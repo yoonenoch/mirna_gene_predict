@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import pandas as pd
 
-data = 'AXB_383_gene_default.csv'
+data = 'mirna_gene_dataset.csv' #input data
 
 global count_i
 count_i = 0
@@ -53,10 +53,6 @@ def RNN(X, weights, biases):
     results = tf.matmul(outputs[-1], weights['out']) + biases['out']
 
     return results
-
-'''
-    
-'''
 
 
 pred = RNN(x, weights, biases)
