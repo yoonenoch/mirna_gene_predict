@@ -52,12 +52,7 @@ def RNN(X, weights, biases):
     X_in = tf.matmul(X, weights['in']) + biases['in']
     X_in = tf.reshape(X_in, [-1, n_steps, n_hidden_units])
 
-    '''
-    cell = tf.compat.v1.keras.layers.CuDNNLSTM(n_hidden_units)
-    print(cell.output_size, cell.state_size)
-    outputs, final_state = tf.nn.dynamic_rnn(cell,X_in,dtype=tf.float32)
-    '''
-
+   
     multi_cells = tf.contrib.rnn.MultiRNNCell([create_rnn_cell()
                                                for _ in range(3)],
                                               state_is_tuple=True)
