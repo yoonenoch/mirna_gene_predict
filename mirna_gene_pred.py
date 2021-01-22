@@ -4,8 +4,9 @@ from tensorflow.examples.tutorials.mnist import input_data
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import pandas as pd
+from tensorflow.python.ops.rnn_cell_impl import BasicLSTMCell
 
-data = 'mirna_gene_dataset.csv' #input data
+data = 'AXB_383_gene_default.csv'
 
 global count_i
 count_i = 0
@@ -38,16 +39,33 @@ biases = {
 
 lr = 0.001
 
+def create_rnn_cell():
+    cell = tf.contrib.rnn.BasicLSTMCell(num_units = n_hidden_units,
+                                        state_is_tuple = True)
+    return cell
+
+
+
 def RNN(X, weights, biases):
 
     X = tf.reshape(X, [-1, n_inputs])
     X_in = tf.matmul(X, weights['in']) + biases['in']
     X_in = tf.reshape(X_in, [-1, n_steps, n_hidden_units])
 
-
-    cell = tf.compat.v1.keras.layers.LSTMCell(n_hidden_units)
+    '''
+    cell = tf.compat.v1.keras.layers.CuDNNLSTM(n_hidden_units)
     print(cell.output_size, cell.state_size)
     outputs, final_state = tf.nn.dynamic_rnn(cell,X_in,dtype=tf.float32)
+    '''
+
+    multi_cells = tf.contrib.rnn.MultiRNNCell([create_rnn_cell()
+                                               for _ in range(3)],
+                                              state_is_tuple=True)
+
+    outputs, _= tf.nn.dynamic_rnn(multi_cells,X_in,dtype=tf.float32)
+
+
+
 
     outputs = tf.unstack(tf.transpose(outputs, [1, 0, 2]))
     results = tf.matmul(outputs[-1], weights['out']) + biases['out']
